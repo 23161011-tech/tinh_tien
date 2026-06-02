@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Kế Toán Nhóm Pro 4.0 🌐</title>
+    <title>Hệ Thống Kế Toán Nhóm Pro 4.2 🌐</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -19,67 +19,56 @@
         }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: #f1f5f9; color: var(--text-main); padding: 16px; line-height: 1.5; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05); overflow: hidden; }
+        .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow: hidden; }
         
-        /* Màn hình Đăng nhập */
         #loginScreen { padding: 40px 24px; text-align: center; }
         .app-logo { font-size: 48px; margin-bottom: 12px; }
-        h2 { font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 24px; }
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
         
-        /* Bố cục tiêu đề ứng dụng */
         .app-header { background: var(--gray-bg); padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
         .role-tag { background: #e0e7ff; color: var(--primary); padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
         
-        /* Thanh Điều Hướng Điều Khiển Tabs */
         .nav-tabs { display: flex; background: #fff; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-align: center;}
+        .tab-btn { flex: 1; padding: 14px 8px; background: none; border: none; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; text-align: center; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fefefe; }
 
-        /* Khối Nội Dung Tab */
         .tab-content { padding: 20px; display: none; }
         .tab-content.active { display: block; }
         .form-group { margin-bottom: 16px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
         label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #334155; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; background: #fff; color: var(--text-main); transition: all 0.2s; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; background: #fff; color: var(--text-main); }
         input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         
-        /* Danh Sách Ô Nhập Tiền */
         .member-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .member-card { display: flex; align-items: center; justify-content: space-between; background: var(--gray-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); }
         .member-card label { margin-bottom: 0; font-weight: 500; flex: 1; }
         .member-card input { max-width: 160px; text-align: right; font-weight: 600; }
 
-        /* Thành Phần Nút Bấm */
-        button.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: var(--danger-hover); }
         .btn-secondary { background: #fff; color: var(--text-muted); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: var(--gray-bg); color: var(--text-main); }
 
-        /* Bảng Đối Soát Tuần */
         table { width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; margin-top: 10px; }
-        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background: var(--gray-bg); font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-        td { font-size: 15px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        th { background: var(--gray-bg); font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
 
-        /* Thẻ Lịch Sử Chi Tiết */
-        .history-card { background: white; border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; margin-bottom: 12px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .history-card { background: white; border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; margin-bottom: 12px; position: relative; }
         .history-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .session-badge { padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; text-transform: uppercase; }
+        .session-badge { padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; }
         .badge-Sáng { background: #fef3c7; color: #d97706; }
         .badge-Trưa { background: #e0f2fe; color: #0284c7; }
         .badge-Tối { background: #f3e8ff; color: #7c3aed; }
         .history-title { font-weight: 600; font-size: 16px; }
+        .history-meta { font-size: 13px; color: var(--primary); font-weight: 600; margin-top: 4px; background: #f5f3ff; padding: 6px 10px; border-radius: 6px; display: inline-block;}
         .history-body { font-size: 13px; color: var(--text-muted); background: var(--gray-bg); padding: 8px 12px; border-radius: 6px; margin-top: 6px; }
-        .history-footer { font-size: 11px; color: #94a3b8; margin-top: 8px; }
-        .delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; }
+        .delete-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--danger); cursor: pointer; }
 
-        /* Giao diện quản lý Admin */
         .mgmt-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); }
-        .loading { text-align: center; padding: 30px; color: var(--text-muted); font-size: 14px; }
+        .loading { text-align: center; padding: 30px; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -92,7 +81,7 @@
                 <label>Bạn là ai?</label>
                 <select id="loginUser">
                     <option value="Admin">🔑 Ban Quản Trị (Admin)</option>
-                    </select>
+                </select>
             </div>
             <div class="form-group" style="text-align: left;">
                 <label>Mật khẩu xác thực</label>
@@ -122,23 +111,36 @@
                     <label>📍 Tên món ăn / Địa điểm:</label>
                     <input type="text" id="mealName" placeholder="Ví dụ: Bún đậu mắm tôm, lẩu nướng...">
                 </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🌅 Thời điểm ăn:</label>
+                        <select id="mealSession">
+                            <option value="Sáng">Sáng 🌅</option>
+                            <option value="Trưa">Trưa ☀️</option>
+                            <option value="Tối">Tối 🌙</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Người đứng ra trả tiền:</label>
+                        <select id="mealPayer">
+                            </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label>🌅 Thời điểm ăn:</label>
-                    <select id="mealSession">
-                        <option value="Sáng">Sáng 🌅</option>
-                        <option value="Trưa">Trưa ☀️</option>
-                        <option value="Tối">Tối 🌙</option>
-                    </select>
+                    <label>💰 Tổng số tiền chi trả cho bữa đó (VNĐ):</label>
+                    <input type="number" id="totalAmount" placeholder="Nhập tổng hóa đơn bữa ăn...">
                 </div>
                 
-                <label style="margin-top: 20px; margin-bottom: 10px; display: block;">💰 Chi tiết số tiền ăn:</label>
+                <label style="margin-top: 20px; margin-bottom: 10px; display: block; font-weight: 700;">🍽️ Số tiền ăn riêng của từng người:</label>
                 <div id="memberInputs" class="member-grid"></div>
                 
                 <button class="btn btn-primary" onclick="addMeal()">💾 Lưu Lên Hệ Thống Cloud</button>
             </div>
 
             <div id="tab-summary" class="tab-content">
-                <h3 style="font-size: 18px; margin-bottom: 12px;">Bảng Đối Soát Tuần Này</h3>
+                <h3 style="font-size: 18px; margin-bottom: 12px;">Bảng Thống Kê Bù Trừ Nợ Tuần Này</h3>
                 <div id="summaryTable"></div>
                 <button class="btn btn-primary" onclick="copySummary()" style="margin-top: 20px;">📋 Copy Báo Cáo Gửi Zalo</button>
                 <div id="adminControls" style="display: none; margin-top: 12px;">
@@ -163,7 +165,7 @@
 
     <script>
         // --- ⚙️ KHU VỰC CẤU HÌNH GOOGLE FIREBASE CLOUD ---
-        // Thay thế toàn bộ cụm dấu ngoặc nhọn dưới đây bằng thông số từ dự án Firebase của bạn[cite: 57, 87]:
+        // Hãy paste cấu hình thật lấy từ Firebase Console của bạn vào đây:
         const firebaseConfig = {
   apiKey: "AIzaSyAALXDSdZuUyDG9oXyB3s3sFMYKzlwibD8",
   authDomain: "apptinh-tiennhom.firebaseapp.com",
@@ -182,17 +184,17 @@
         let members = [];
         let meals = [];
 
-        // Lắng nghe danh sách thành viên trực tuyến và cập nhật giao diện tự động [cite: 82]
+        // Đồng bộ danh sách thành viên trực tuyến liên tục từ Firebase
         function listenToMembers() {
             db.collection("members").orderBy("name", "asc")
             .onSnapshot((snapshot) => {
                 members = [];
                 const selectLogin = document.getElementById('loginUser');
+                const selectPayer = document.getElementById('mealPayer');
                 
-                // Reset cấu trúc và giữ lại quyền Admin mặc định
                 selectLogin.innerHTML = '<option value="Admin">🔑 Ban Quản Trị (Admin)</option>';
+                selectPayer.innerHTML = '';
                 
-                // Trường hợp lần đầu chạy cơ sở dữ liệu trống, tự khởi tạo 5 người mặc định [cite: 85]
                 if(snapshot.empty) {
                     const defaultMembers = ["An", "Bình", "Cường", "Dũng", "Vy"];
                     defaultMembers.forEach(name => db.collection("members").add({ name }));
@@ -204,8 +206,8 @@
                     memberData.id = doc.id;
                     members.push(memberData);
                     
-                    // Nạp tài khoản động vào danh sách Đăng nhập [cite: 84]
                     selectLogin.innerHTML += `<option value="${memberData.name}">${memberData.name}</option>`;
+                    selectPayer.innerHTML += `<option value="${memberData.name}">${memberData.name}</option>`;
                 });
                 
                 if (currentUser) {
@@ -225,7 +227,7 @@
             } else if (user !== "Admin" && pass === "user123") {
                 currentRole = "member"; currentUser = user;
             } else {
-                alert("Mật khẩu không chính xác, thử lại nhé!"); return;
+                alert("Mật khẩu xác thực chưa đúng!"); return;
             }
 
             document.getElementById('loginScreen').style.display = 'none';
@@ -238,6 +240,11 @@
                 document.getElementById('nav-mgmt').style.display = 'block';
             }
             
+            // Tự động gán người thanh toán mặc định là người đang đăng nhập (Nếu là thành viên)
+            if(currentRole !== "admin") {
+                document.getElementById('mealPayer').value = currentUser;
+            }
+
             initFormInputs();
             listenToMeals();
         }
@@ -257,7 +264,6 @@
             event.target.classList.add('active');
         }
 
-        // 🔥 TỐI ƯU GIAO DIỆN: Thành viên chỉ hiển thị duy nhất ô của mình, Admin hiển thị tất cả [cite: 92, 93]
         function initFormInputs() {
             const inputsDiv = document.getElementById('memberInputs');
             inputsDiv.innerHTML = '';
@@ -266,20 +272,17 @@
                 const isAdmin = currentRole === "admin";
                 const isSelf = m.name === currentUser;
                 
-                // Ẩn toàn bộ ô nhập liệu của người khác nếu tài khoản đăng nhập là thành viên [cite: 90, 97]
-                if (!isAdmin && !isSelf) {
-                    return;
-                }
+                // Thành viên thường chỉ nhìn thấy duy nhất dòng nhập liệu của chính họ
+                if (!isAdmin && !isSelf) return;
                 
                 inputsDiv.innerHTML += `
                     <div class="member-card">
-                        <label>👤 ${m.name} ${isSelf ? '(Bạn)' : ''}</label>
+                        <label>👤 Tiền ăn của ${m.name} ${isSelf ? '(Bạn)' : ''}:</label>
                         <input type="number" id="amt-${m.name}" placeholder="0đ">
                     </div>`;
             });
         }
 
-        // Lắng nghe dữ liệu hóa đơn ăn uống real-time từ Cloud Firebase
         function listenToMeals() {
             db.collection("meals").orderBy("createdAt", "desc")
             .onSnapshot((snapshot) => {
@@ -292,69 +295,108 @@
             });
         }
 
-        // 🔥 XỬ LÝ LƯU HÓA ĐƠN ĐỒNG BỘ: Mặc định giá trị 0đ cho các ô bị ẩn [cite: 92, 93, 98]
         function addMeal() {
             const name = document.getElementById('mealName').value.trim() || `Bữa ăn ngày ${new Date().toLocaleDateString('vi-VN')}`;
             const session = document.getElementById('mealSession').value;
+            const payer = document.getElementById('mealPayer').value;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
             let amounts = {};
             let hasData = false;
             
             members.forEach(m => {
-                // Kiểm tra xem trường nhập liệu có hiển thị trên màn hình không, nếu không hiển thị mặc định bằng 0đ [cite: 98]
                 const inputEl = document.getElementById(`amt-${m.name}`);
                 const val = inputEl ? (parseFloat(inputEl.value) || 0) : 0;
-                
                 amounts[m.name] = val;
                 if(val > 0) hasData = true;
             });
 
-            if(!hasData) { alert("Vui lòng điền số tiền ăn!"); return; }
+            if(totalAmount <= 0) { alert("Vui lòng nhập tổng số tiền chi trả hóa đơn!"); return; }
+            if(!hasData) { alert("Vui lòng điền số tiền ăn cụ thể!"); return; }
 
             db.collection("meals").add({
-                name, session, amounts, creator: currentUser, createdAt: new Date().getTime()
+                name, session, payer, totalAmount, amounts, creator: currentUser, createdAt: new Date().getTime()
             })
             .then(() => {
                 document.getElementById('mealName').value = '';
+                document.getElementById('totalAmount').value = '';
                 members.forEach(m => {
                     const input = document.getElementById(`amt-${m.name}`);
                     if(input) input.value = '';
                 });
-                alert("🎉 Đã lưu hóa đơn thành công lên hệ thống đám mây!");
+                alert("🎉 Đã lưu hóa đơn lên đám mây thành công!");
             });
         }
 
         function deleteMeal(id) {
-            if(confirm("Xóa bản ghi bữa ăn này khỏi hệ thống?")) {
+            if(confirm("Xóa lịch sử bữa ăn này khỏi hệ thống đám mây?")) {
                 db.collection("meals").doc(id).delete();
             }
         }
 
         function renderSummaryAndHistory() {
-            // Tính toán tổng tiền cộng dồn của từng người [cite: 8, 99]
-            let totals = {};
-            members.forEach(m => totals[m.name] = 0);
+            // Khởi tạo các biến tính toán tiền nợ bù trừ
+            let totalEaten = {};  // Tổng số tiền từng người đã ăn
+            let totalPaid = {};   // Tổng số tiền từng người đã đứng ra trả hộ cả nhóm
+            
+            members.forEach(m => {
+                totalEaten[m.name] = 0;
+                totalPaid[m.name] = 0;
+            });
+
             meals.forEach(meal => {
+                // Cộng dồn tiền trả hộ cho người thanh toán bữa đó
+                if (totalPaid[meal.payer] !== undefined) {
+                    totalPaid[meal.payer] += (parseFloat(meal.totalAmount) || 0);
+                }
+                // Cộng dồn tiền ăn của từng thành viên
                 members.forEach(m => {
-                    totals[m.name] += (meal.amounts[m.name] || 0);
+                    totalEaten[m.name] += (meal.amounts[m.name] || 0);
                 });
             });
 
-            // Vẽ bảng tổng kết tiền cuối tuần tại Tab 2 [cite: 99]
-            let htmlTable = `<table><thead><tr><th>Thành viên</th><th style="text-align:right;">Tổng Tiền Nhận Hóa Đơn</th></tr></thead><tbody>`;
+            // RENDER BẢNG TỔNG KẾT BÙ TRỪ NỢ CUỐI TUẦN
+            let htmlTable = `<table>
+                <thead>
+                    <tr>
+                        <th>Thành viên</th>
+                        <th>Đã ăn (1)</th>
+                        <th>Đã thanh toán (2)</th>
+                        <th style="text-align:right;">Kết quả cần thu (1 - 2)</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+                
             members.forEach(m => {
+                let netBalance = totalEaten[m.name] - totalPaid[m.name];
+                let balanceText = "";
+                let balanceStyle = "";
+
+                if (netBalance > 0) {
+                    balanceText = `👉 Phải đóng: +${netBalance.toLocaleString('vi-VN')} đ`;
+                    balanceStyle = "color: var(--danger); font-weight: 700;";
+                } else if (netBalance < 0) {
+                    balanceText = `🎉 Nhận lại: ${netBalance.toLocaleString('vi-VN')} đ`;
+                    balanceStyle = "color: var(--success); font-weight: 700;";
+                } else {
+                    balanceText = "👌 Đã hoàn thành (0 đ)";
+                    balanceStyle = "color: var(--text-muted);";
+                }
+
                 htmlTable += `<tr>
                     <td><strong>${m.name}</strong></td>
-                    <td style="text-align:right; color:var(--danger); font-weight:700;">${totals[m.name].toLocaleString('vi-VN')} đ</td>
+                    <td>${totalEaten[m.name].toLocaleString('vi-VN')} đ</td>
+                    <td>${totalPaid[m.name].toLocaleString('vi-VN')} đ</td>
+                    <td style="text-align:right; ${balanceStyle}">${balanceText}</td>
                 </tr>`;
             });
             htmlTable += `</tbody></table>`;
             document.getElementById('summaryTable').innerHTML = htmlTable;
 
-            // Vẽ danh sách lịch sử chi tiết chia theo buổi Sáng/Trưa/Tối tại Tab 3 [cite: 36]
+            // RENDER DANH SÁCH LỊCH SỬ CHI TIẾT
             const listDiv = document.getElementById('mealList');
             listDiv.innerHTML = '';
             if(meals.length === 0) {
-                listDiv.innerHTML = '<div class="loading">Chưa có dữ liệu ăn uống tuần này.</div>';
+                listDiv.innerHTML = '<div class="loading">Chưa có dữ liệu ăn uống tuần này trên Cloud.</div>';
                 return;
             }
 
@@ -373,14 +415,17 @@
                             <span class="session-badge badge-${meal.session}">${meal.session}</span>
                             <span class="history-title">${meal.name}</span>
                         </div>
-                        <div class="history-body">${details}</div>
-                        <div class="history-footer">Người ghi chép: ${meal.creator}</div>
+                        <div class="history-meta">
+                            💰 Tổng bill: ${(meal.totalAmount || 0).toLocaleString('vi-VN')}đ | 💳 Người chi: ${meal.payer}
+                        </div>
+                        <div class="history-body"><strong>Chi tiết suất ăn:</strong><br>${details}</div>
+                        <div class="history-footer">Ghi chép bởi: ${meal.creator}</div>
                         ${deleteButton}
                     </div>`;
             });
         }
 
-        // CHỨC NĂNG QUẢN LÝ THÀNH VIÊN TRÊN GIAO DIỆN ĐÁM MÂY (CHỈ ADMIN TRUY CẬP) [cite: 83]
+        // CHỨC NĂNG QUẢN LÝ THÀNH VIÊN TRỰC TIẾP TRÊN CLOUD
         function renderMemberManagement() {
             const container = document.getElementById('memberManagementList');
             container.innerHTML = '';
@@ -399,44 +444,55 @@
             if(!name) return;
             
             if(members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-                alert("Thành viên này đã có tên trong danh sách nhóm!"); return;
+                alert("Thành viên này đã tồn tại!"); return;
             }
 
             db.collection("members").add({ name }).then(() => {
                 nameInput.value = '';
+                alert("Đã đồng bộ thành viên mới lên Cloud!");
             });
         }
 
         function deleteMember(id) {
-            if(confirm("Bạn có chắc muốn xóa thành viên này không? Lưu ý: Việc xóa tài khoản giữa tuần có thể làm ảnh hưởng đến việc tính toán tổng số tiền hóa đơn.")) {
+            if(confirm("Xóa thành viên này khỏi hệ thống đám mây?")) {
                 db.collection("members").doc(id).delete();
             }
         }
 
         function copySummary() {
-            let totals = {};
-            members.forEach(m => totals[m.name] = 0);
+            let totalEaten = {}; let totalPaid = {};
+            members.forEach(m => { totalEaten[m.name] = 0; totalPaid[m.name] = 0; });
             meals.forEach(meal => {
-                members.forEach(m => { totals[m.name] += (meal.amounts[m.name] || 0); });
+                if (totalPaid[meal.payer] !== undefined) totalPaid[meal.payer] += (parseFloat(meal.totalAmount) || 0);
+                members.forEach(m => { totalEaten[m.name] += (meal.amounts[m.name] || 0); });
             });
 
-            let text = "📋 TỔNG KẾT TIỀN ĐI ĂN TUẦN NÀY:\n";
-            members.forEach(m => { text += `- ${m.name}: ${totals[m.name].toLocaleString('vi-VN')} đ\n`; });
-            text += "\nMọi người đối soát lại chi tiết lịch sử qua link App rồi chuyển khoản lại cho mình nhé! Xin cám ơn 🥰";
+            let text = "📋 TỔNG KẾT TIỀN ĐI ĂN TUẦN NÀY (BÙ TRỪ NỢ):\n";
+            members.forEach(m => {
+                let netBalance = totalEaten[m.name] - totalPaid[m.name];
+                if (netBalance > 0) {
+                    text += `- ${m.name}: Phải đóng thêm +${netBalance.toLocaleString('vi-VN')} đ\n`;
+                } else if (netBalance < 0) {
+                    text += `- ${m.name}: Nhận lại tiền dư ${netBalance.toLocaleString('vi-VN')} đ\n`;
+                } else {
+                    text += `- ${m.name}: Đã xong xuôi (0 đ)\n`;
+                }
+            });
+            text += "\nMọi người check lịch sử chi tiết trên App và thanh toán bù trừ nhé! Thân ái 🥰";
             
-            navigator.clipboard.writeText(text).then(() => alert("Đã copy báo cáo thành công!"));
+            navigator.clipboard.writeText(text).then(() => alert("Đã copy báo cáo!"));
         }
 
         function clearAllData() {
-            if(confirm("Hành động này sẽ XÓA TOÀN BỘ dữ liệu ăn uống trên hệ thống Cloud để reset tuần mới. Bạn đã chắc chắn?")) {
+            if(confirm("Hành động này sẽ XÓA SẠCH toàn bộ lịch sử hóa đơn tuần này trên Cloud. Bạn chắc chắn chứ?")) {
                 db.collection("meals").get().then((snapshot) => {
                     snapshot.forEach(doc => doc.ref.delete());
-                    alert("Đã làm sạch dữ liệu! Sẵn sàng cho tuần mới.");
+                    alert("Đã làm sạch dữ liệu tuần cũ!");
                 });
             }
         }
 
-        // Tự động kích hoạt lắng nghe dữ liệu thành viên từ cơ sở dữ liệu ngay khi tải trang
+        // Chạy khởi động lắng nghe dữ liệu đám mây
         listenToMembers();
     </script>
 </body>
