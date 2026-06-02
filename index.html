@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Kế Toán Nhóm Pro 4.3 🌐</title>
+    <title>Hệ Thống Kế Toán Nhóm Pro 4.4 🌐</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -47,8 +47,10 @@
         .member-card label { margin-bottom: 0; font-weight: 500; flex: 1; }
         .member-card input { max-width: 160px; text-align: right; font-weight: 600; }
 
-        button.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button.btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-secondary { background: #fff; color: var(--text-muted); border: 1px solid var(--border-color); }
 
@@ -136,7 +138,7 @@
                 <label style="margin-top: 20px; margin-bottom: 10px; display: block; font-weight: 700;">🍽️ Số tiền ăn riêng của từng người:</label>
                 <div id="memberInputs" class="member-grid"></div>
                 
-                <button class="btn btn-primary" onclick="addMeal()">💾 Lưu Lên Hệ Thống Cloud</button>
+                <button class="btn btn-primary" id="btnSaveMeal" onclick="addMeal()">💾 Lưu Lên Hệ Thống Cloud</button>
             </div>
 
             <div id="tab-summary" class="tab-content">
@@ -156,7 +158,7 @@
                 <h3 style="font-size: 18px; margin-bottom: 12px;">Quản Lý Thành Viên Nhóm</h3>
                 <div class="form-group" style="display: flex; gap: 8px;">
                     <input type="text" id="newMemberName" placeholder="Nhập tên thành viên mới...">
-                    <button class="btn btn-primary" style="width: auto; white-space: nowrap;" onclick="addNewMember()">➕ Thêm</button>
+                    <button class="btn btn-primary" id="btnAddMember" style="width: auto; white-space: nowrap;" onclick="addNewMember()">➕ Thêm</button>
                 </div>
                 <div id="memberManagementList" style="background: var(--gray-bg); border-radius: 8px;"></div>
             </div>
@@ -164,12 +166,12 @@
     </div>
 
     <script>
-        // --- ĐÃ LIÊN KẾT SẴN CẤU HÌNH FIREBASE CỦA BẠN ---
+        // 🔥 ĐÃ SỬA CHÍNH XÁC: Bỏ dấu gạch ngang sai trong dự án của bạn (apptinhtiennhom)
         const firebaseConfig = {
             apiKey: "AIzaSyAALXDSdZuUyDG9oXyB3s3sFMYKzlwibD8",
-            authDomain: "apptinh-tiennhom.firebaseapp.com",
-            projectId: "apptinh-tiennhom",
-            storageBucket: "apptinh-tiennhom.firebasestorage.app",
+            authDomain: "apptinhtiennhom.firebaseapp.com",
+            projectId: "apptinhtiennhom",
+            storageBucket: "apptinhtiennhom.firebasestorage.app",
             messagingSenderId: "692398650746",
             appId: "1:692398650746:web:322c8b98944f24d75bd2c3",
             measurementId: "G-10BR12FHYQ"
@@ -183,7 +185,6 @@
         let members = [];
         let meals = [];
 
-        // Đồng bộ danh sách thành viên trực tuyến liên tục từ Firebase + Bẫy báo lỗi
         function listenToMembers() {
             db.collection("members").orderBy("name", "asc")
             .onSnapshot((snapshot) => {
@@ -217,7 +218,7 @@
                     renderMemberManagement();
                 }
             }, (error) => {
-                alert("❌ Lỗi Firebase: Không thể tải danh sách thành viên. Vui lòng kiểm tra lại nút Publish trong tab Rules của Firebase. Chi tiết: " + error.message);
+                alert("❌ Lỗi Firebase Rules: Hãy kiểm tra lại tab Rules trên Firebase Console xem bạn đã nhấn nút PUBLISH chưa. Chi tiết: " + error.message);
             });
         }
 
@@ -294,7 +295,7 @@
                 });
                 renderSummaryAndHistory();
             }, (error) => {
-                alert("❌ Lỗi Firebase: Không thể tải lịch sử hóa đơn. Chi tiết: " + error.message);
+                alert("❌ Lỗi Firebase tải lịch sử: " + error.message);
             });
         }
 
@@ -316,22 +317,31 @@
             if(totalAmount <= 0) { alert("Vui lòng nhập tổng số tiền chi trả hóa đơn!"); return; }
             if(!hasData) { alert("Vui lòng điền số tiền ăn cụ thể!"); return; }
 
-            // Đẩy lên Firebase Cloud
+            // Hiệu ứng phản hồi tức thì cho người dùng
+            const btn = document.getElementById('btnSaveMeal');
+            btn.innerHTML = "⏳ Đang đồng bộ lên Đám Mây...";
+            btn.disabled = true;
+
             db.collection("meals").add({
                 name, session, payer, totalAmount, amounts, creator: currentUser, createdAt: new Date().getTime()
             })
             .then(() => {
-                // 🔥 Đã tối ưu xóa sạch hoàn toàn sau khi lưu thành công!
+                // 🔥 CHỈ XÓA TRẮNG KHI ĐÃ LƯU THÀNH CÔNG VÀO CLOUD
                 document.getElementById('mealName').value = '';
                 document.getElementById('totalAmount').value = '';
                 members.forEach(m => {
                     const input = document.getElementById(`amt-${m.name}`);
                     if(input) input.value = '';
                 });
-                alert("🎉 Đã lưu hóa đơn lên đám mây thành công! Thanh nhập liệu đã được làm trống.");
+                
+                btn.innerHTML = "💾 Lưu Lên Hệ Thống Cloud";
+                btn.disabled = false;
+                alert("🎉 Đã lưu thành công! Các ô nhập liệu đã được tự động làm sạch.");
             })
             .catch((error) => {
-                alert("❌ KHÔNG THỂ LƯU DỮ LIỆU! Firebase từ chối ghi dữ liệu. Lý do: " + error.message);
+                btn.innerHTML = "💾 Lưu Lên Hệ Thống Cloud";
+                btn.disabled = false;
+                alert("❌ LƯU THẤT BẠI! Hệ thống từ chối ghi. Lỗi: " + error.message);
             });
         }
 
@@ -449,13 +459,21 @@
                 alert("Thành viên này đã tồn tại!"); return;
             }
 
+            const btn = document.getElementById('btnAddMember');
+            btn.innerHTML = "⏳...";
+            btn.disabled = true;
+
             db.collection("members").add({ name })
             .then(() => {
                 nameInput.value = '';
-                alert("🎉 Đã thêm và đồng bộ thành viên mới lên Cloud thành công!");
+                btn.innerHTML = "➕ Thêm";
+                btn.disabled = false;
+                alert("🎉 Đã thêm thành viên và đồng bộ vĩnh viễn lên Cloud!");
             })
             .catch(error => {
-                alert("❌ Không thể thêm thành viên! Lỗi Firebase: " + error.message);
+                btn.innerHTML = "➕ Thêm";
+                btn.disabled = false;
+                alert("❌ Không thể thêm thành viên! Lỗi: " + error.message);
             });
         }
 
