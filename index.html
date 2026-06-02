@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Kế Toán Nhóm Pro 4.2 🌐</title>
+    <title>Hệ Thống Kế Toán Nhóm Pro 4.3 🌐</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -164,17 +164,16 @@
     </div>
 
     <script>
-        // --- ⚙️ KHU VỰC CẤU HÌNH GOOGLE FIREBASE CLOUD ---
-        // Hãy paste cấu hình thật lấy từ Firebase Console của bạn vào đây:
+        // --- ĐÃ LIÊN KẾT SẴN CẤU HÌNH FIREBASE CỦA BẠN ---
         const firebaseConfig = {
-  apiKey: "AIzaSyAALXDSdZuUyDG9oXyB3s3sFMYKzlwibD8",
-  authDomain: "apptinh-tiennhom.firebaseapp.com",
-  projectId: "apptinh-tiennhom",
-  storageBucket: "apptinh-tiennhom.firebasestorage.app",
-  messagingSenderId: "692398650746",
-  appId: "1:692398650746:web:322c8b98944f24d75bd2c3",
-  measurementId: "G-10BR12FHYQ"
-};
+            apiKey: "AIzaSyAALXDSdZuUyDG9oXyB3s3sFMYKzlwibD8",
+            authDomain: "apptinh-tiennhom.firebaseapp.com",
+            projectId: "apptinh-tiennhom",
+            storageBucket: "apptinh-tiennhom.firebasestorage.app",
+            messagingSenderId: "692398650746",
+            appId: "1:692398650746:web:322c8b98944f24d75bd2c3",
+            measurementId: "G-10BR12FHYQ"
+        };
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -184,7 +183,7 @@
         let members = [];
         let meals = [];
 
-        // Đồng bộ danh sách thành viên trực tuyến liên tục từ Firebase
+        // Đồng bộ danh sách thành viên trực tuyến liên tục từ Firebase + Bẫy báo lỗi
         function listenToMembers() {
             db.collection("members").orderBy("name", "asc")
             .onSnapshot((snapshot) => {
@@ -197,7 +196,9 @@
                 
                 if(snapshot.empty) {
                     const defaultMembers = ["An", "Bình", "Cường", "Dũng", "Vy"];
-                    defaultMembers.forEach(name => db.collection("members").add({ name }));
+                    defaultMembers.forEach(name => {
+                        db.collection("members").add({ name }).catch(err => console.error("Lỗi tạo mẫu:", err));
+                    });
                     return;
                 }
 
@@ -215,6 +216,8 @@
                     renderSummaryAndHistory();
                     renderMemberManagement();
                 }
+            }, (error) => {
+                alert("❌ Lỗi Firebase: Không thể tải danh sách thành viên. Vui lòng kiểm tra lại nút Publish trong tab Rules của Firebase. Chi tiết: " + error.message);
             });
         }
 
@@ -240,7 +243,6 @@
                 document.getElementById('nav-mgmt').style.display = 'block';
             }
             
-            // Tự động gán người thanh toán mặc định là người đang đăng nhập (Nếu là thành viên)
             if(currentRole !== "admin") {
                 document.getElementById('mealPayer').value = currentUser;
             }
@@ -272,7 +274,6 @@
                 const isAdmin = currentRole === "admin";
                 const isSelf = m.name === currentUser;
                 
-                // Thành viên thường chỉ nhìn thấy duy nhất dòng nhập liệu của chính họ
                 if (!isAdmin && !isSelf) return;
                 
                 inputsDiv.innerHTML += `
@@ -292,6 +293,8 @@
                     meals.push(data);
                 });
                 renderSummaryAndHistory();
+            }, (error) => {
+                alert("❌ Lỗi Firebase: Không thể tải lịch sử hóa đơn. Chi tiết: " + error.message);
             });
         }
 
@@ -313,30 +316,34 @@
             if(totalAmount <= 0) { alert("Vui lòng nhập tổng số tiền chi trả hóa đơn!"); return; }
             if(!hasData) { alert("Vui lòng điền số tiền ăn cụ thể!"); return; }
 
+            // Đẩy lên Firebase Cloud
             db.collection("meals").add({
                 name, session, payer, totalAmount, amounts, creator: currentUser, createdAt: new Date().getTime()
             })
             .then(() => {
+                // 🔥 Đã tối ưu xóa sạch hoàn toàn sau khi lưu thành công!
                 document.getElementById('mealName').value = '';
                 document.getElementById('totalAmount').value = '';
                 members.forEach(m => {
                     const input = document.getElementById(`amt-${m.name}`);
                     if(input) input.value = '';
                 });
-                alert("🎉 Đã lưu hóa đơn lên đám mây thành công!");
+                alert("🎉 Đã lưu hóa đơn lên đám mây thành công! Thanh nhập liệu đã được làm trống.");
+            })
+            .catch((error) => {
+                alert("❌ KHÔNG THỂ LƯU DỮ LIỆU! Firebase từ chối ghi dữ liệu. Lý do: " + error.message);
             });
         }
 
         function deleteMeal(id) {
             if(confirm("Xóa lịch sử bữa ăn này khỏi hệ thống đám mây?")) {
-                db.collection("meals").doc(id).delete();
+                db.collection("meals").doc(id).delete().catch(err => alert("Lỗi xóa: " + err.message));
             }
         }
 
         function renderSummaryAndHistory() {
-            // Khởi tạo các biến tính toán tiền nợ bù trừ
-            let totalEaten = {};  // Tổng số tiền từng người đã ăn
-            let totalPaid = {};   // Tổng số tiền từng người đã đứng ra trả hộ cả nhóm
+            let totalEaten = {};  
+            let totalPaid = {};   
             
             members.forEach(m => {
                 totalEaten[m.name] = 0;
@@ -344,17 +351,14 @@
             });
 
             meals.forEach(meal => {
-                // Cộng dồn tiền trả hộ cho người thanh toán bữa đó
                 if (totalPaid[meal.payer] !== undefined) {
                     totalPaid[meal.payer] += (parseFloat(meal.totalAmount) || 0);
                 }
-                // Cộng dồn tiền ăn của từng thành viên
                 members.forEach(m => {
                     totalEaten[m.name] += (meal.amounts[m.name] || 0);
                 });
             });
 
-            // RENDER BẢNG TỔNG KẾT BÙ TRỪ NỢ CUỐI TUẦN
             let htmlTable = `<table>
                 <thead>
                     <tr>
@@ -375,7 +379,7 @@
                     balanceText = `👉 Phải đóng: +${netBalance.toLocaleString('vi-VN')} đ`;
                     balanceStyle = "color: var(--danger); font-weight: 700;";
                 } else if (netBalance < 0) {
-                    balanceText = `🎉 Nhận lại: ${netBalance.toLocaleString('vi-VN')} đ`;
+                    balanceText = `🎉 Nhận lại: ${Math.abs(netBalance).toLocaleString('vi-VN')} đ`;
                     balanceStyle = "color: var(--success); font-weight: 700;";
                 } else {
                     balanceText = "👌 Đã hoàn thành (0 đ)";
@@ -392,7 +396,6 @@
             htmlTable += `</tbody></table>`;
             document.getElementById('summaryTable').innerHTML = htmlTable;
 
-            // RENDER DANH SÁCH LỊCH SỬ CHI TIẾT
             const listDiv = document.getElementById('mealList');
             listDiv.innerHTML = '';
             if(meals.length === 0) {
@@ -425,7 +428,6 @@
             });
         }
 
-        // CHỨC NĂNG QUẢN LÝ THÀNH VIÊN TRỰC TIẾP TRÊN CLOUD
         function renderMemberManagement() {
             const container = document.getElementById('memberManagementList');
             container.innerHTML = '';
@@ -447,15 +449,19 @@
                 alert("Thành viên này đã tồn tại!"); return;
             }
 
-            db.collection("members").add({ name }).then(() => {
+            db.collection("members").add({ name })
+            .then(() => {
                 nameInput.value = '';
-                alert("Đã đồng bộ thành viên mới lên Cloud!");
+                alert("🎉 Đã thêm và đồng bộ thành viên mới lên Cloud thành công!");
+            })
+            .catch(error => {
+                alert("❌ Không thể thêm thành viên! Lỗi Firebase: " + error.message);
             });
         }
 
         function deleteMember(id) {
             if(confirm("Xóa thành viên này khỏi hệ thống đám mây?")) {
-                db.collection("members").doc(id).delete();
+                db.collection("members").doc(id).delete().catch(err => alert("Lỗi xóa: " + err.message));
             }
         }
 
@@ -473,7 +479,7 @@
                 if (netBalance > 0) {
                     text += `- ${m.name}: Phải đóng thêm +${netBalance.toLocaleString('vi-VN')} đ\n`;
                 } else if (netBalance < 0) {
-                    text += `- ${m.name}: Nhận lại tiền dư ${netBalance.toLocaleString('vi-VN')} đ\n`;
+                    text += `- ${m.name}: Nhận lại tiền dư ${Math.abs(netBalance).toLocaleString('vi-VN')} đ\n`;
                 } else {
                     text += `- ${m.name}: Đã xong xuôi (0 đ)\n`;
                 }
@@ -488,11 +494,10 @@
                 db.collection("meals").get().then((snapshot) => {
                     snapshot.forEach(doc => doc.ref.delete());
                     alert("Đã làm sạch dữ liệu tuần cũ!");
-                });
+                }).catch(err => alert("Lỗi xóa hết: " + err.message));
             }
         }
 
-        // Chạy khởi động lắng nghe dữ liệu đám mây
         listenToMembers();
     </script>
 </body>
